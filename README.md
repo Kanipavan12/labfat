@@ -1,96 +1,84 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
-#
-# ******** NOTE ********
-# We have attempted to detect the languages in your repository. Please check
-# the `language` matrix defined below to confirm you have the correct set of
-# supported CodeQL languages.
-#
-name: "CodeQL Advanced"
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  schedule:
-    - cron: '19 10 * * 3'
-
-jobs:
-  analyze:
-    name: Analyze (${{ matrix.language }})
-    # Runner size impacts CodeQL analysis time. To learn more, please see:
-    #   - https://gh.io/recommended-hardware-resources-for-running-codeql
-    #   - https://gh.io/supported-runners-and-hardware-resources
-    #   - https://gh.io/using-larger-runners (GitHub.com only)
-    # Consider using larger runners or machines with greater resources for possible analysis time improvements.
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
-    permissions:
-      # required for all workflows
-      security-events: write
-
-      # required to fetch internal or private CodeQL packs
-      packages: read
-
-      # only required for workflows in private repositories
-      actions: read
-      contents: read
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
-        # Use `c-cpp` to analyze code written in C, C++ or both
-        # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
-        # Use 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
-        # To learn more about changing the languages that are analyzed or customizing the build mode for your analysis,
-        # see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning.
-        # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
-        # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    # Add any setup steps before running the `github/codeql-action/init` action.
-    # This includes steps like installing compilers or runtimes (`actions/setup-node`
-    # or others). This is typically only required for manual builds.
-    # - name: Setup runtime (example)
-    #   uses: actions/setup-example@v1
-
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-
-        # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
-
-    # If the analyze step fails for one of the languages you are analyzing with
-    # "We were unable to automatically build your code", modify the matrix above
-    # to set the build mode to "manual" for that language. Then modify this step
-    # to build your code.
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
-    - if: matrix.build-mode == 'manual'
-      shell: bash
-      run: |
-        echo 'If you are using a "manual" build mode for one or more of the' \
-          'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  make bootstrap'
-        echo '  make release'
-        exit 1
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+class BankAccount {
+    constructor(accountNumber, accountHolder, balance = 0) {
+      this.accountNumber = accountNumber;
+      this.accountHolder = accountHolder;
+      this.balance = balance;
+    }
+  
+    // Method to check balance
+    checkBalance() {
+      console.log(`Account Number: ${this.accountNumber}`);
+      console.log(`Account Holder: ${this.accountHolder}`);
+      console.log(`Current Balance: $${this.balance}`);
+    }
+  
+    // Method to deposit money
+    deposit(amount) {
+      if (amount > 0) {
+        this.balance += amount;
+        console.log(`Deposited $${amount} successfully.`);
+      } else {
+        console.log("Deposit amount must be greater than zero.");
+      }
+    }
+  
+    // Method to withdraw money
+    withdraw(amount) {
+      if (amount > 0 && amount <= this.balance) {
+        this.balance -= amount;
+        console.log(`Withdrew $${amount} successfully.`);
+      } else if (amount > this.balance) {
+        console.log("Insufficient balance.");
+      } else {
+        console.log("Withdrawal amount must be greater than zero.");
+      }
+    }
+  }
+  
+  // Class for the bank to manage multiple accounts
+  class Bank {
+    constructor() {
+      this.accounts = [];
+    }
+  
+    // Method to create a new account
+    createAccount(accountNumber, accountHolder, initialDeposit) {
+      const account = new BankAccount(accountNumber, accountHolder, initialDeposit);
+      this.accounts.push(account);
+      console.log("Account created successfully!");
+    }
+  
+    // Method to find an account by account number
+    findAccount(accountNumber) {
+      return this.accounts.find(account => account.accountNumber === accountNumber);
+    }
+  
+    // Method to display all accounts
+    displayAccounts() {
+      console.log("Bank Accounts:");
+      this.accounts.forEach(account => {
+        account.checkBalance();
+        console.log("----------------------");
+      });
+    }
+  }
+  
+  // Example usage
+  const myBank = new Bank();
+  
+  // Create accounts
+  myBank.createAccount(101, "John Doe", 500);
+  myBank.createAccount(102, "Jane Smith", 1000);
+  
+  // Deposit money
+  const johnAccount = myBank.findAccount(101);
+  if (johnAccount) johnAccount.deposit(200);
+  
+  // Withdraw money
+  if (johnAccount) johnAccount.withdraw(100);
+  
+  // Check balance
+  if (johnAccount) johnAccount.checkBalance();
+  
+  // Display all accounts
+  myBank.displayAccounts();
